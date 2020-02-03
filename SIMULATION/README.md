@@ -1,6 +1,6 @@
 ## Simulation study
 
-Launch the simulations running the script `./SIMULATION_julia.R`, doing for example
+Reproduce the simulations running the script `./SIMULATION_revision.R`, doing for example
 
 ```R
 Rscript ./SIMULATION_julia.R
