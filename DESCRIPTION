@@ -17,7 +17,7 @@ Authors@R: c(person("Dayne L", "Filer",
 Maintainer: Dayne L Filer <dayne.filer@gmail.com>
 Description: Implements the projected t-SNE method for batch correction of 
   high-dimensional data (<arXiv:1911.06708>). 
-Imports: stats, RSpectra
+Imports: stats, RSpectra, utils
 Suggests: data.table, batchelor, kBET, splatter, scater, Rtsne, knitr, lisi,
   harmony, dlfUtils, xtable
 VignetteBuilder: knitr
