@@ -1,7 +1,7 @@
 Package: bcTSNE
 Type: Package
 Title: Projected t-SNE for Batch Correction 
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: c(person("Dayne L", "Filer", 
                     role = c("aut", "cre"), 
                     email = "dayne.filer@gmail.com"),
