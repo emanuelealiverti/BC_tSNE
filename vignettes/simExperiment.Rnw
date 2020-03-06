@@ -42,19 +42,20 @@ knitr::opts_chunk$set(background = "#FCFCFC",
 
 
 <<warning=FALSE>>=
-suppressPackageStartupMessages({
-  require(bcTSNE)
-  require(data.table)
-  require(batchelor)
-  require(kBET)
-  require(splatter)
-  require(scater)
-  require(Rtsne)
-  require(lisi)
-  require(harmony)
-  require(dlfUtils)
-  require(xtable)
+pkgLoaded <- suppressPackageStartupMessages({
+  c(require(bcTSNE),
+    require(data.table),
+    require(batchelor),
+    require(kBET),
+    require(splatter),
+    require(scater),
+    require(Rtsne),
+    require(lisi),
+    require(harmony),
+    require(dlfUtils),
+    require(xtable))
 })
+pkgLoaded <- all(pkgLoaded)
 ## Uncomment to install kBet & lisi
 ## Note: the packages will require compilation
 # if (!require(drat)) {install.packages("drat"); library(drat)}
@@ -65,28 +66,30 @@ suppressPackageStartupMessages({
 Create simulated single-cell RNA sequencing data using the \href{https://bioconductor.org/packages/release/bioc/html/splatter.html}{\texttt{splatter}} package. 
 
 <<eval=TRUE>>=
-p <- newSplatParams(seed = 1234,
-                    batchCells = rep(200, 4), 
-                    batch.facLoc = 0.2, 
-                    batch.facScale = 0.1,
-                    group.prob = c(0.1, 0.2, 0.3, 0.4),
-                    de.facLoc = 0.1,
-                    de.facScale = 0.4)
-sim <- splatSimulate(p, method = "groups", verbose = FALSE)
-sizeFactors(sim) <- librarySizeFactors(sim)
-sim <- normalize(sim)
-sim <- normalize(sim, return_log = FALSE)
-assay(sim, "centered") <- t(scale(t(normcounts(sim)), 
-                                  center = TRUE, 
-                                  scale = FALSE))
-Z <- model.matrix( ~ -1 + factor(colData(sim)$Batch))
-grp <- factor(sim$Group)
-bch <- as.integer(factor(sim$Batch))
+if (pkgLoaded) {
+  p <- newSplatParams(seed = 1234,
+                      batchCells = rep(200, 4), 
+                      batch.facLoc = 0.2, 
+                      batch.facScale = 0.1,
+                      group.prob = c(0.1, 0.2, 0.3, 0.4),
+                      de.facLoc = 0.1,
+                      de.facScale = 0.4)
+  sim <- splatSimulate(p, method = "groups", verbose = FALSE)
+  sizeFactors(sim) <- librarySizeFactors(sim)
+  sim <- normalize(sim)
+  sim <- normalize(sim, return_log = FALSE)
+  assay(sim, "centered") <- t(scale(t(normcounts(sim)), 
+                                    center = TRUE, 
+                                    scale = FALSE))
+  Z <- model.matrix( ~ -1 + factor(colData(sim)$Batch))
+  grp <- factor(sim$Group)
+  bch <- as.integer(factor(sim$Batch))
+}
 @
 
-
 <<calcMet,echo=FALSE>>=
-calcMetrics <- function(Y, bchLst) {
+if (pkgLoaded) {
+  calcMetrics <- function(Y, bchLst) {
   calcSil <- function(x) {
     s <- batch_sil(pca.data = list(x = Y), batch = x, nPCs = 2)
     1 - abs(s)
@@ -109,10 +112,12 @@ calcMetrics <- function(Y, bchLst) {
   res <- list(sil = sil, kbet = kbet, lisi = lisi, pca = pca)
   do.call(cbind, res)
 }
+}
 @
 
 <<pltFunc,echo=FALSE>>=
-pltSimRes <- function(Y, lbl) {
+if (pkgLoaded) {
+  pltSimRes <- function(Y, lbl) {
   par(mar = c(4, 1, 2, 1) + 0.1)
   plot(Y, 
        ann = FALSE, 
@@ -146,6 +151,7 @@ pltSimRes <- function(Y, lbl) {
        xpd = NA,
        adj = c(1, 0.5))
 }
+}
 @
 
 Setup a placeholder for the results:
@@ -159,90 +165,108 @@ names(res) <- c("btcc", "btlc", "hmlc", "hmcc", "mnn", "tsne")
 Start by running the regular t-SNE algorithm:
 
 <<tsne>>=
-set.seed(1234)
-res$tsne <- Rtsne(t(assay(sim, "centered")), inital_dims = 50)$Y
-pltSimRes(res$tsne, "t-SNE")
+if (pkgLoaded) {
+  set.seed(1234)
+  res$tsne <- Rtsne(t(assay(sim, "centered")), inital_dims = 50)$Y
+  pltSimRes(res$tsne, "t-SNE")
+}
 @
 
 Run the BC-t-SNE algorithm on \texttt{centered}:
 
 <<bctsne-cc>>=
-set.seed(1234)
-res$btcc <- bctsne(t(assay(sim, "centered")), Z, k = 50)$Y
-pltSimRes(res$btcc, "bcTSNE-centered")
+if (pkgLoaded) {
+  set.seed(1234)
+  res$btcc <- bctsne(t(assay(sim, "centered")), Z, k = 50)$Y
+  pltSimRes(res$btcc, "bcTSNE-centered")
+}
 @
 
 Run the BC-t-SNE algorithm on \texttt{logcounts}:
 
 <<bctsne-lc>>=
-set.seed(1234)
-res$btlc <- bctsne(t(logcounts(sim)), Z, k = 50)$Y
-pltSimRes(res$btlc, "bcTSNE-logcounts")
+if (pkgLoaded) {
+  set.seed(1234)
+  res$btlc <- bctsne(t(logcounts(sim)), Z, k = 50)$Y
+  pltSimRes(res$btlc, "bcTSNE-logcounts")
+}
 @
 
 Run the harmony algorithm on the default \texttt{logcounts}:
 
 <<harmony,message=FALSE>>=
-set.seed(1234)
-sim <- runPCA(sim, 50, exprs_values = "logcounts")
-sim <- RunHarmony(sim, group.by.vars = "Batch")
-res$hmlc = Rtsne(reducedDim(sim, "HARMONY"), pca = FALSE)$Y
-pltSimRes(res$hmlc, "Harmony-logcounts")
+if (pkgLoaded) {
+  set.seed(1234)
+  sim <- runPCA(sim, 50, exprs_values = "logcounts")
+  sim <- RunHarmony(sim, group.by.vars = "Batch")
+  res$hmlc = Rtsne(reducedDim(sim, "HARMONY"), pca = FALSE)$Y
+  pltSimRes(res$hmlc, "Harmony-logcounts")
+}
 @
 
 Run the harmony algorithm on the same set as bcTSNE, \texttt{centered}:
 
 <<harmony-centered,message=FALSE>>=
-set.seed(1234)
-sim <- runPCA(sim, 50, exprs_values = "centered")
-sim <- RunHarmony(sim, group.by.vars = "Batch")
-res$hmcc = Rtsne(reducedDim(sim, "HARMONY"), pca = FALSE)$Y
-pltSimRes(res$hmcc, "Harmony-centered")
+if (pkgLoaded) {
+  set.seed(1234)
+  sim <- runPCA(sim, 50, exprs_values = "centered")
+  sim <- RunHarmony(sim, group.by.vars = "Batch")
+  res$hmcc = Rtsne(reducedDim(sim, "HARMONY"), pca = FALSE)$Y
+  pltSimRes(res$hmcc, "Harmony-centered")
+}
 @
 
 Run the MNN algorithm:
 
 <<mnn>>=
-set.seed(1234)
-tmp <- mnnCorrect(sim, batch = factor(sim$Batch))
-res$mnn <- Rtsne(t(assay(tmp, "corrected")), initial_dims = 50)$Y
-rm(tmp)
-pltSimRes(res$mnn, "mnnRes")
+if (pkgLoaded) {
+  set.seed(1234)
+  tmp <- mnnCorrect(sim, batch = factor(sim$Batch))
+  res$mnn <- Rtsne(t(assay(tmp, "corrected")), initial_dims = 50)$Y
+  rm(tmp)
+  pltSimRes(res$mnn, "mnnRes")
+}
 @
 
 Compare performances:
 
 <<comp>>=
-batchList <- list(batch = factor(sim$Batch), 
-                  cellType = factor(sim$Group))
-met <- lapply(res, calcMetrics, bchLst = batchList)
+if (pkgLoaded) {
+  batchList <- list(batch = factor(sim$Batch), 
+                    cellType = factor(sim$Group))
+  met <- lapply(res, calcMetrics, bchLst = batchList)
+}
 @
 
 
 <<figs,echo=FALSE,results='hide'>>=
-met <- lapply(met, round, 4)
-met <- lapply(met, as.data.table, keep.rownames = TRUE)
-for (i in seq_along(met)) met[[i]][ , alg := names(met)[i]]
-met <- rbindlist(met)
-met <- met[ , .(rn, alg, sil, kbet, lisi, pca)][order(rn, alg)]
-met[alg == "btcc", alg := "bcTSNE-centered"]
-met[alg == "btlc", alg := "bcTSNE-logcounts"]
-met[alg == "hmlc", alg := "Harmony-logcounts"]
-met[alg == "hmcc", alg := "Harmony-centered"]
-met[alg == "mnn", alg  := "MNN"]
-met[alg == "tsne", alg := "\\textit{t}-SNE"]
-met[rn == "batch", rn := "Batch"]
-met[rn == "cellType", rn := "Cell type"]
-met[ , tmp := seq_along(alg), by = rn]
-met[tmp != 1, rn := ""]
-met[ , tmp := NULL]
-setnames(met, c("", "", "SIL", "kBET", "iLSIS", "PcR"))
+if (pkgLoaded) {
+  met <- lapply(met, round, 4)
+  met <- lapply(met, as.data.table, keep.rownames = TRUE)
+  for (i in seq_along(met)) met[[i]][ , alg := names(met)[i]]
+  met <- rbindlist(met)
+  met <- met[ , .(rn, alg, sil, kbet, lisi, pca)][order(rn, alg)]
+  met[alg == "btcc", alg := "bcTSNE-centered"]
+  met[alg == "btlc", alg := "bcTSNE-logcounts"]
+  met[alg == "hmlc", alg := "Harmony-logcounts"]
+  met[alg == "hmcc", alg := "Harmony-centered"]
+  met[alg == "mnn", alg  := "MNN"]
+  met[alg == "tsne", alg := "\\textit{t}-SNE"]
+  met[rn == "batch", rn := "Batch"]
+  met[rn == "cellType", rn := "Cell type"]
+  met[ , tmp := seq_along(alg), by = rn]
+  met[tmp != 1, rn := ""]
+  met[ , tmp := NULL]
+  setnames(met, c("", "", "SIL", "kBET", "iLSIS", "PcR"))
+}
 @
 
 <<echo=FALSE,results='asis'>>=
-print(xtable(met, digits = 4),hline.after = c(-1, 0, 6, nrow(met)), 
-      include.rownames = FALSE, 
-      sanitize.text.function = I)
+if (pkgLoaded) {
+  print(xtable(met, digits = 4),hline.after = c(-1, 0, 6, nrow(met)), 
+        include.rownames = FALSE, 
+        sanitize.text.function = I)
+}
 @
 
 <<>>=
@@ -251,10 +275,12 @@ print(xtable(met, digits = 4),hline.after = c(-1, 0, 6, nrow(met)),
 
 <<eval=FALSE,echo=FALSE,resuls='hide'>>=
 ## For internal use, save the sim results to the untracked inst/notrack folder
-saveRDS(res, "../inst/notrack/sim.res")
-saveRDS(met, "../inst/notrack/sim.metrics")
-saveRDS(sim, "../inst/notrack/sim.sce")
-saveRDS(as.data.table(colData(sim)), "../inst/notrack/sim.cellMeta")
+if (pkgLoaded) {
+  saveRDS(res, "../inst/notrack/sim.res")
+  saveRDS(met, "../inst/notrack/sim.metrics")
+  saveRDS(sim, "../inst/notrack/sim.sce")
+  saveRDS(as.data.table(colData(sim)), "../inst/notrack/sim.cellMeta")
+}
 @
 
 
