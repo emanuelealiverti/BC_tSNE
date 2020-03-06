@@ -21,6 +21,7 @@ Imports: stats, RSpectra, utils
 Suggests: data.table, batchelor, kBET, splatter, scater, Rtsne, knitr, lisi,
   harmony, dlfUtils, xtable
 VignetteBuilder: knitr
+SystemRequirements: GNU make
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

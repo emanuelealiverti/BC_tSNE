@@ -1,5 +1,6 @@
 #include <R.h>
 #include <R_ext/Lapack.h>
+#include <R_ext/BLAS.h>
 #include <Rmath.h> 
 #include <stdlib.h>
 #include <stdio.h>
