@@ -5,5 +5,5 @@ This repository is associated with the paper: Aliverti, Tilson, Filer, Babcock, 
 To install:
 ```
 install.packages("bcTSNE")
-devtools::install_github("https://github.com/emanuelealiverti/bcTSNE")
+devtools::install_github("https://github.com/emanuelealiverti/BC_tSNE")
 ```
