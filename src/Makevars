@@ -1,5 +1,6 @@
-## Taken directly from RcppArmadillo::RcppArmadillo.package.skeleton()
+## Taken directly from RcppArmadillo::RcppArmadillo.package.skeleton();
+## removed references to openmp 
+
 CXX_STD = CXX11
 
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) 
-PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
