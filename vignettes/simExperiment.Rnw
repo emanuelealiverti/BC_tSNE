@@ -275,12 +275,10 @@ if (pkgLoaded) {
 
 <<eval=FALSE,echo=FALSE,resuls='hide'>>=
 ## For internal use, save the sim results to the untracked inst/notrack folder
-if (pkgLoaded) {
-  saveRDS(res, "../inst/notrack/sim.res")
-  saveRDS(met, "../inst/notrack/sim.metrics")
-  saveRDS(sim, "../inst/notrack/sim.sce")
-  saveRDS(as.data.table(colData(sim)), "../inst/notrack/sim.cellMeta")
-}
+# saveRDS(res, "../inst/notrack/sim.res")
+# saveRDS(met, "../inst/notrack/sim.metrics")
+# saveRDS(sim, "../inst/notrack/sim.sce")
+# saveRDS(as.data.table(colData(sim)), "../inst/notrack/sim.cellMeta")
 @
 
 

@@ -1,0 +1,17 @@
+citHeader("To cite bcTSNE in publications, please use:")
+
+citEntry(entry = "article",
+  author = "Emanuele Aliverti and Jeff Tilson and Dayne L Filer and Benjamin Babcock and Alejandro Colaneri and Jennifer Ocasio and Timothy R Gershon and Kirk C Wilhelmsen and David B Dunson",
+  title = "Projected t-SNE for batch correction.",
+  journal = "Bioinformatics",
+  publisher = "Oxford University Press",
+  year = "2020",
+  issn = "1367-4811",
+  url = "https://doi.org/10.1093/bioinformatics/btaa189",
+  textVersion = "Aliverti E, Tilson J, Filer DL, Babcock B, Colaneri A, Ocasio J,
+Gershon TR, Wilhelmsen KC, Dunson DB (2020). \"Projected t-SNE for
+batch correction.\" Bioinformatics (Oxford University Press). doi: 10.1093/bioinformatics/btaa189",
+  copyright = "(c) The Author(s) (2020). Published by Oxford University Press. All rights reserved. For Permissions, please email: journals.permissions@oup.com."
+)
+
+

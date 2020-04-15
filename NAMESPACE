@@ -2,6 +2,9 @@
 
 export(bctsne)
 importFrom(RSpectra,svds)
+importFrom(Rtsne,Rtsne)
+importFrom(graphics,plot)
 importFrom(stats,lm)
+importFrom(stats,model.matrix)
 importFrom(utils,type.convert)
 useDynLib(bcTSNE)

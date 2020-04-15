@@ -21,21 +21,46 @@ bctsne(X, Z, k = 50, outDim = 2, perplexity = 30, maxIter = 1000)
 algorithm}
 }
 \value{
-numeric matrix, t-SNE gradient
+\code{list} wth the following items:
+\describe{
+  \item{\code{Xred}}{numeric matrix, the reduced dimension input to \code{bctsne}}
+  \item{\code{Z}}{model matrix indicating batch membership}
+  \item{\code{perplexity}}{perpelexity value used in computing t-SNE}
+  \item{\code{Y}}{batch-corrected projection matrix}
+  \item{\code{maxIter}}{maximum iterations used in training}
+}
 }
 \description{
 Calculate BC t-SNE by orthogonal gradient descent
 }
 \details{
 \code{X} should be preprocessed (e.g. PCA, centered and scaled). \code{Z}
-is the full model matrix, including the intercept. 
-
-TODO:
-\itemize{
-  \item Add cost function calculation to tsne C code
-  \item Add parameters for max iterations, momentum values, etc. 
-  \item Once cost function is calculated, return training data 
-  \item Add vector to zero out betas
-  \item Add verbose parameter and print statments in the C code
+is the full model matrix, excluding the intercept.
 }
+\examples{
+## Create small simulated dataset, A, with embeded batch effects
+set.seed(2731)
+kRid <- 20
+p    <- 100
+n    <- 200
+
+W <- matrix(rnorm(p*kRid), kRid)
+S <- matrix(rnorm(n*kRid), n)
+z <- sample(1:3, rep = TRUE, size = n)
+Z <- model.matrix( ~ -1 + as.factor(z))
+l <- matrix(rnorm(kRid*NCOL(Z)), kRid)
+A <- (S - Z \%*\% t(l) ) \%*\% W
+
+## Scale A to give input, X 
+X <- scale(A)
+
+resUnadj <- Rtsne::Rtsne(X)                 ## Standard t-SNE
+resAdj   <- bctsne(X = X, Z = Z, k = 10)    ## Batch-corrected t-SNE
+
+## Plot results, no true effects were included in the simulated data, so 
+## we expect all batches to overlap with bcTSNE; batch membership indicated
+## by color
+plot(resUnadj$Y, col = z)
+plot(resAdj$Y, col = z)
+
 }
