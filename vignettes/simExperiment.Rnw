@@ -76,8 +76,8 @@ if (pkgLoaded) {
                       de.facScale = 0.4)
   sim <- splatSimulate(p, method = "groups", verbose = FALSE)
   sizeFactors(sim) <- librarySizeFactors(sim)
-  sim <- normalize(sim)
-  sim <- normalize(sim, return_log = FALSE)
+  sim <- logNormCounts(sim)
+  sim <- logNormCounts(sim, log = FALSE)
   assay(sim, "centered") <- t(scale(t(normcounts(sim)), 
                                     center = TRUE, 
                                     scale = FALSE))
