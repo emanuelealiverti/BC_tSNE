@@ -1,6 +1,11 @@
+#define USE_FC_LEN_T
+#include <Rconfig.h>
+#include <R_ext/BLAS.h>
+#ifndef FCONE
+# define FCONE
+#endif
 #include <R.h>
 #include <R_ext/Lapack.h>
-#include <R_ext/BLAS.h>
 #include <Rmath.h> 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,7 +50,7 @@ void sqdist(double *X, int *N, int *D, double *dist) {
   // For mat M, LDM is the first dimension (LDM, *) of non-op matrix
   // TA gives op for A; TB gives op for B; "N" means none, "T" is transpose
   //        dgemm(TA,  TB,  M,  N,  K,  a,  A, LDA, B, LDB, b,  C,    LDC)
-  F77_CALL(dgemm)("N", "T", N,  N,  D,  &a, X, N,   X, N,   &b, dist, N);
+  F77_CALL(dgemm)("N", "T", N,  N,  D,  &a, X, N,   X, N,   &b, dist, N FCONE FCONE);
   
 }
 
@@ -134,12 +139,12 @@ void ols(double *A, int *M, int *N, double *B, int *NRHS, double *W) {
   for (int i = 0; i < M[0]*NRHS[0]; i++) Bc[i] = B[i];
   // Solves B = AX for X; A (M x N), B (M x NRHS)
   //        dgels(TA,  M, N, NRHS, A,  LDA, B,  LDB, WORK,      LWORK,  INFO)
-  F77_CALL(dgels)("N", M, N, NRHS, Ac, M,   Bc, M,   &worksize, &lwork, &info);
+  F77_CALL(dgels)("N", M, N, NRHS, Ac, M,   Bc, M,   &worksize, &lwork, &info FCONE);
   int nwork = (int) worksize;
   double *work = (double*) malloc(nwork*sizeof(double)); 
   if (work == NULL) error("Memory allocation failed.");
   // Solve the system of equations.
-  F77_CALL(dgels)("N", M, N, NRHS, Ac, M,   Bc, M,   work,      &nwork, &info);
+  F77_CALL(dgels)("N", M, N, NRHS, Ac, M,   Bc, M,   work,      &nwork, &info FCONE);
   if (info != 0) error("OLS step to correct for batch failed.");
   // Get the beta values out of dYc -- we need the first K rows and J columns
   for (int i = 0; i < NRHS[0]; i++) {
@@ -213,7 +218,7 @@ void grad(double *Y, double *pval, int *N, int *J,
   // For mat M, LDM is the first dimension (LDM, *) of non-op matrix
   // TA gives op for A; TB gives op for B; "N" means none, "T" is transpose
   //        dgemm(TA,  TB,  M,  N,  K,  a,   A, LDA, B, LDB, b,  C,     LDC)
-  F77_CALL(dgemm)("N", "N", N,  J,  K,  &a,  Z, N,   W, K,   &b, dYhat, N);
+  F77_CALL(dgemm)("N", "N", N,  J,  K,  &a,  Z, N,   W, K,   &b, dYhat, N FCONE FCONE);
   for (int i = 0; i < N[0]*J[0]; i++) dY[i] -= dYhat[i];
   free(dYhat);
   free(W);
