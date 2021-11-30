@@ -1,7 +1,7 @@
 Package: bcTSNE
 Type: Package
 Title: Projected t-SNE for Batch Correction 
-Version: 0.11.0
+Version: 0.11.1
 Authors@R: c(person("Dayne L", "Filer", 
                     role = c("aut", "cre"), 
                     email = "dayne.filer@gmail.com"),
@@ -39,7 +39,6 @@ VignetteBuilder: knitr
 SystemRequirements: GNU make
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
 URL: https://github.com/emanuelealiverti/BC_tSNE
 RoxygenNote: 7.1.2
 Additional_repositories: https://daynefiler.github.io/drat
